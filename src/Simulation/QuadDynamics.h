@@ -17,6 +17,9 @@ class QuadDynamics : public BaseDynamics
 public:
 	static QuadcopterHandle Create(string name, int cnt=0)
 	{
+    /* (ISay-0015) The function is static (thus called without creating an actual object of the 
+    class), but returns a new handle whenever called. Setting color after creation seems to have
+    something to deal with visualization of the drones */
 		QuadcopterHandle ret(new QuadDynamics(name));
     float hue = (float)cnt*30.f;
     ret->color = HSVtoRGB(hue + 15.f, 1, 1);
@@ -27,13 +30,13 @@ public:
 	virtual ~QuadDynamics() {}; // destructor
 	virtual int Initialize();
 
-  virtual void Run(float dt, float simulationTime, int &idum,  // updates the simulation
+    virtual void Run(float dt, float simulationTime, int &idum,  // updates the simulation
       V3F externalForceInGlobalFrame = V3F(),    // required to take net forces into account
       V3F externalMomentInBodyFrame = V3F());   // required to take net moments into account
                   
 	virtual void SetCommands(const VehicleCommand& cmd);	// update commands in the simulator coming from a command2 packet
 
-  virtual void Dynamics(float dt, float simTime, V3F external_force, V3F external_moment, int& idum);
+    virtual void Dynamics(float dt, float simTime, V3F external_force, V3F external_moment, int& idum);
 
 	double GetRotDistInt() {return rotDisturbanceInt;};
 	double GetXyzDistInt() {return xyzDisturbanceInt;};
@@ -41,15 +44,17 @@ public:
 	double GetXyzDistBW() {return xyzDisturbanceBW;};
 	double GetGyroNoiseInt() {return gyroNoiseInt;};
 
-  virtual bool GetData(const string& name, float& ret) const;
-  virtual vector<string> GetFields() const;
+    virtual bool GetData(const string& name, float& ret) const;
+    virtual vector<string> GetFields() const;
 
-  void Reset();
+    void Reset();
 
 	VehicleCommand GetCommands() const { return curCmd; }
 
-  void ResetState(V3F pos=V3F(), V3F vel=V3F(), Quaternion<float> att=Quaternion<float>(), V3F omega=V3F());
-  void SetPosVelAttOmega(V3F pos=V3F(), V3F vel=V3F(), Quaternion<float> att=Quaternion<float>(), V3F omega=V3F()); 
+    void ResetState(V3F pos=V3F(), V3F vel=V3F(), Quaternion<float> att=Quaternion<float>(), 
+    	V3F omega=V3F());
+    void SetPosVelAttOmega(V3F pos=V3F(), V3F vel=V3F(), Quaternion<float> att=Quaternion<float>(), 
+		V3F omega=V3F()); 
 
 	void TurnOffNonidealities();
 

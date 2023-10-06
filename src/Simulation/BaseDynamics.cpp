@@ -12,28 +12,34 @@ using namespace SLR;
 
 BaseDynamics::BaseDynamics(string name)
 {
-  _name = name;
+  _name = name; /* (ISay-0017) trace */
   _initialized = false;
-  Initialize();
+  // Initialize();  
+  /* (ISay-0017-temp1) I commented the above because I saw it worthless: The derived function 
+  calls immediately it after this call */
 }
 
 int BaseDynamics::Initialize()
-{
-  ParamsHandle config = SimpleConfig::GetInstance();
+{ 
+	ParamsHandle config = SimpleConfig::GetInstance();
 
-  _initialized = false;
+	_initialized = false;
 
-  _vehicleType = -1; // see BaseDynamics.h for list of numbers
+	_vehicleType = -1; // see BaseDynamics.h for list of numbers
 
+	/* (ISay-0019) The following variables are pose saturations. If the current drone exceeds
+	these poses it will be considered back to its previous pose and ints velocity will be set to 
+	zero. Of course this is only done in a function named 'QuadDynamics::RunRoomConstraints'.
+	See where is it called */
   // load in BaseDynamics-specific double-valued settings from the config in your inheritor
-  xMin = config->Get("Sim.xMin", -10.f);
-  yMin = config->Get("Sim.yMin", -10.f);;
-  xMax = config->Get("Sim.xMax", 10.f);
-  yMax = config->Get("Sim.yMax", 10.f);
-  bottom = config->Get("Sim.bottom", 0.f);
-  top = config->Get("Sim.top", 10.f);
+	xMin = config->Get("Sim.xMin", -10.f);
+	yMin = config->Get("Sim.yMin", -10.f);;
+	xMax = config->Get("Sim.xMax", 10.f);
+	yMax = config->Get("Sim.yMax", 10.f);
+	bottom = config->Get("Sim.bottom", 0.f);
+	top = config->Get("Sim.top", 10.f);
 
-  return 1;
+	return 1;
 }
 
 void BaseDynamics::ResetState(V3F newPos, V3F newVel, Quaternion<float> newAtt, V3F newOmega)

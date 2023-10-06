@@ -100,7 +100,9 @@ Visualizer_GLUT::Visualizer_GLUT(int *argcp, char **argv)
 : _camera(V3D(-5,-1,-5),V3D(0,0,-1)), _draw_dt_ms(.1f)
 {
   _camera.SetUp(V3D(0,0,-1));
+  // printf("\nherhere3\n");
   glutInit(argcp, argv);
+  // printf("\nherhere4\n");
 	glQuadric = gluNewQuadric();
 
 	_volumeCallList = 0;
@@ -111,7 +113,7 @@ Visualizer_GLUT::Visualizer_GLUT(int *argcp, char **argv)
   _g_viz = this;
   _mouseLeftDown = _mouseRightDown = false;
 
-  initializeGL(argcp, argv);
+  initializeGL();
   
   Reset();
 }
@@ -175,7 +177,7 @@ void Visualizer_GLUT::Update()
   if (_exiting) return;
 }
 
-void Visualizer_GLUT::initializeGL(int *argcp, char **argv)
+void Visualizer_GLUT::initializeGL()
 {
   glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowPosition(200, 200);

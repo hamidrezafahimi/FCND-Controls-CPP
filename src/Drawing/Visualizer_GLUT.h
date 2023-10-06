@@ -60,7 +60,7 @@ public:
   void OnMenu(string);
 
 protected:
-	void initializeGL(int *argcp, char **argv);
+	void initializeGL();
 	
   
   shared_ptr<SLR::OpenGLDrawer> _glDraw;

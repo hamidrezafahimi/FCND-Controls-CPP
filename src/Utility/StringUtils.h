@@ -18,6 +18,8 @@ inline std::string Trim(const std::string& str,
     return str.substr(strBegin, strRange);
 }
 
+/*
+Converts a given string to an upper-case string */
 inline std::string ToUpper(const std::string& in)
 {
   std::string ret=in;

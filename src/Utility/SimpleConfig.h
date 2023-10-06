@@ -34,6 +34,10 @@ public:
   void PrintAll();
 
 protected:
+  /*
+  The only pointer which exists of this class
+  Everybody who need access to this class, only calls the function 'GetInstance' and it returns
+  only a unique instance of the class which it holds from itself */
 	static shared_ptr<SimpleConfig> s_config;
   map<string,string> _params;
   void ParseLine(const string& filename, const string& ln, int lineNum, string& curNamespace, int depth);

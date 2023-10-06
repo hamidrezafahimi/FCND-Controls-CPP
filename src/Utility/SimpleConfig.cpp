@@ -15,14 +15,14 @@ shared_ptr<SimpleConfig> SimpleConfig::s_config;
 
 SimpleConfig::SimpleConfig()
 {
-	Reset("");
+	Reset(""); /* (ISay-0004) trace */
 }
 
 ParamsHandle SimpleConfig::GetInstance()
 {
 	if (!s_config)
 	{
-		s_config.reset(new SimpleConfig());
+		s_config.reset(new SimpleConfig()); /* (ISay-0003) trace */
 	}
 	return s_config;
 }
@@ -31,44 +31,54 @@ void SimpleConfig::Reset(string rootParam)
 {
   // todo: go to the right directory
   // load all the files in the directory?
-  _params.clear();
-  if (rootParam != "")
-  {
-    ReadFile(rootParam);
-  }
+    _params.clear();
+    if (rootParam != "") /* (ISay-0005) trace - Not this time! if condition id true. get out*/
+    {
+      ReadFile(rootParam); /* (ISay-0007) Now read the config file for the only time */
+    }
 }
 
+/* (ISay-0008) Read a text file line-by-line. 'depth' is not something meaningful for now */
 void SimpleConfig::ReadFile(const string& filename, int depth)
 {
-  if (depth > MAX_INCLUDE_DEPTH)
-  {
-    SLR_WARNING0("Config includes excede maximum include depth (is something including itself?)");
-    return;
-  }
+	if (depth > MAX_INCLUDE_DEPTH)
+	{
+		SLR_WARNING0("Config includes excede maximum include depth (is something including itself?)");
+		return;
+	}
 
-  FILE* f = fopen(filename.c_str(), "r");
-  if (!f)
-  {
-    SLR_ERROR1("Can't open file %s", filename.c_str());
-    return;
-  }
+	FILE* f = fopen(filename.c_str(), "r");
+	if (!f)
+	{
+		SLR_ERROR1("Can't open file %s", filename.c_str());
+		return;
+	}
 
-  char buf[512]; buf[511] = 0;
-  int lineNum = 0;
-  string curNamespace = "";
+	char buf[512]; buf[511] = 0;
+	int lineNum = 0;
+	string curNamespace = "";
 
-  // read line by line...
-  while (fgets(buf, 510, f))
-  {
-    lineNum++;
-    string s(buf);
+	/* (ISay-0009) Reads a text file line by line using fgets() function and stores each line in 
+	a character array buf. It then converts the character array to an std::string object and 
+	passes it to the function ParseLine() along with other parameters like filename, line number, 
+	current namespace, and depth. If a line in the file exceeds 510 characters, it will be divided
+	into two lines. If this is not desirable, an exception can be thrown or the buffer size 
+	can be increased. */
+	while (fgets(buf, 510, f))
+	{
+		lineNum++;
+		string s(buf);
 
-    ParseLine(filename, s, lineNum, curNamespace, depth);
-  }
+		ParseLine(filename, s, lineNum, curNamespace, depth);
+	}
 
-  fclose(f);
+	fclose(f);
 }
 
+/* (ISay-0010) Handle a line written in a config file (.txt). Implements all of the syntactic 
+rules of config files: "Ignoring comments - Including other files - Handling namespaces - Saving 
+defined parameter values". Finally, the '_params' map will be set. These are just string pairs. 
+When going to be used, they will be converted to proper types by 'Get' functions */
 void SimpleConfig::ParseLine(const string& filename, const string& line, int lineNum, string& curNamespace, int depth)
 {
   // primitive trailing removal
@@ -119,6 +129,7 @@ void SimpleConfig::ParseLine(const string& filename, const string& line, int lin
   std::size_t equals2 = s.find_last_of("=");
   if (equals1 != equals2 || equals1 == std::string::npos)
   {
+    // There is more than one or no equal signs
     SLR_WARNING2("Line %d in config file %s is malformed", lineNum, filename.c_str());
     return;
   }
@@ -158,9 +169,7 @@ void SimpleConfig::CopyNamespaceParams(const string& fromNamespace, const string
       tmp = toNamespace + "." + tmp;
       _params[tmp] = i->second;
     }
-
   }
-
 }
 
 void SimpleConfig::PrintAll()
